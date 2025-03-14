@@ -352,6 +352,23 @@ class Commands:
 
         ## Install
         installer.install(PackageList.split(" "))
+    
+    def rm(*args):
+        """
+        Removes the packages provided.
+
+        Arguments:
+            - PackageList: str
+        """
+
+        ## Variables
+        SUCCESS, ARGS = EvaluateArgs(args[0], "PackageList:str")
+        if not SUCCESS: return out.exception(ARGS)
+
+        PackageList: str = ARGS[0]
+
+        ## Install
+        installer.remove(PackageList.split(" "))
 
 ## Runtime
 

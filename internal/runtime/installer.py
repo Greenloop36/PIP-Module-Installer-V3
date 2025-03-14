@@ -18,23 +18,22 @@ def StatusOut(Action: Literal["message", "OK", "FAIL"] = "message", Message: str
             print(f"{Prefix}[ {Fore.GREEN}OK{Fore.RESET} ]")
         else:
             print(f"{Prefix}[{Fore.LIGHTRED_EX}FAIL{Fore.RESET}]")
-        
 
-def install(Packages: list[str]):
+def InstallationAction(Packages: list[str], args: list[str], Message: str):
     AMOUNT: int = len(Packages)
     ERRORS: ErrorList = {}
     ERROR_COUNT: int = 0
 
     if AMOUNT == 1:
-        print(f"Installing {Fore.LIGHTBLUE_EX}1{Fore.RESET} package:")
+        print(f"{Message}ing {Fore.LIGHTBLUE_EX}1{Fore.RESET} package:")
     else:
-        print(f"Installing {Fore.LIGHTBLUE_EX}{AMOUNT}{Fore.RESET} packages:")
+        print(f"{Message}ing {Fore.LIGHTBLUE_EX}{AMOUNT}{Fore.RESET} packages:")
 
     ## Installation
     for Name in Packages:
-        StatusOut(Message=f"installing {Fore.LIGHTCYAN_EX}{Name}{Fore.RESET}...")
+        StatusOut(Message=f"{Message}ing {Fore.LIGHTCYAN_EX}{Name}{Fore.RESET}...")
         RESULT: subprocess.CompletedProcess = subprocess.run(
-            ["pip", "install", Name, "--no-python-version-warning"], 
+            ["pip", "--no-python-version-warning", *args, Name], 
             capture_output=True)
 
         if RESULT.returncode == 0:
@@ -54,20 +53,26 @@ def install(Packages: list[str]):
     ERROR_COUNT = len(ERRORS)
     if ERROR_COUNT > 0:
         if ERROR_COUNT == 1:
-            out.warn("Installation of 1 package failed!")
+            out.warn(f"{Message}ation of 1 package failed!")
         else:
-            out.warn(f"Installation of {ERROR_COUNT} packages failed!")
+            out.warn(f"{Message}ation of {ERROR_COUNT} packages failed!")
     
         for Index, Result in ERRORS.items():
-            print(f"\t| Failed to install \"{Fore.LIGHTCYAN_EX}{str(Result['Package'])}{Fore.RESET}\":")
+            print(f"\t| Failed to {Message} \"{Fore.LIGHTCYAN_EX}{str(Result['Package'])}{Fore.RESET}\":")
             # print(str(Result["Result"].stderr).encode("utf-8"))
             
             # if Index != ERROR_COUNT: print()
     else:
         if AMOUNT == 1:
-            out.success("Installed 1 package.")
+            out.success(f"{Message}ed 1 package.")
         else:
-            out.success(f"Installed {AMOUNT} packages.")
+            out.success(f"{Message}ed {AMOUNT} packages.")
+
+def install(Packages: list[str]):
+    InstallationAction(Packages, ["install"], "Install")
+
+def remove(Packages: list[str]):
+    InstallationAction(Packages, ["uninstall", "--yes"], "Uninstall")
 
 
 ## Runtime

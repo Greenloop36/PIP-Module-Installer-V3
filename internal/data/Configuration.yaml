@@ -5,4 +5,5 @@ ThisVersion: "3.0"
 # GitHub: false
 GitHub:
    Author: Greenloop36
-   Repository: pip-module-installer-v3
+   Repository: PIP-Module-Installer-V3
+   Branch: master

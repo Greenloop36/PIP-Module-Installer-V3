@@ -14,18 +14,20 @@ from colorama import Fore, Back, Style
 
 DIR = os.path.dirname(__file__)
 PathToConfig = f"{os.path.dirname(DIR)}\\data\\Configuration.yaml"
-print(PathToConfig)
 
 ## Configuration
 Configuration = yaml.safe_load(open(PathToConfig))
+
 if Configuration["GitHub"] != False:
+    print(Configuration["GitHub"])
     Author = Configuration["GitHub"]["Author"]
     RepoName = Configuration["GitHub"]["Repository"]
+    Branch = Configuration["GitHub"]["Branch"]
 else:
-    Author = RepoName = ""
+    Author = RepoName = Branch = ""
 
 
-RawBaseURL = f"https://raw.githubusercontent.com/{Author}/{RepoName}/refs/heads/main"
+RawBaseURL = f"https://raw.githubusercontent.com/{Author}/{RepoName}/refs/heads/{Branch}"
 Repository = f"https://github.com/{Author}/{RepoName}"
 DownloadURL = f"https://api.github.com/repos/{Author}/{RepoName}/zipball"
 
@@ -141,7 +143,7 @@ def CheckToken(TokenToCheck: str = Token):
     return Success
 
 
-def Update(TargetDirectory: str, Branch: str = "main"):
+def Update(TargetDirectory: str, Branch: str = "Branch"):
     Url = f"{DownloadURL}/{Branch}"
 
     print(f"Updating from \"{Fore.LIGHTBLUE_EX}{Url}{Fore.RESET}\"...")
@@ -254,6 +256,7 @@ def Update(TargetDirectory: str, Branch: str = "main"):
 
 def GetRawFile(Path: str, Prefix: str = "/") -> tuple[bool, str]:
     Success, Result = ProtectedRequest(f"{RawBaseURL}{Prefix}{Path}")
+    # print(f"{RawBaseURL}{Prefix}{Path}")
 
     if not Success:
         return False, Result
@@ -261,11 +264,12 @@ def GetRawFile(Path: str, Prefix: str = "/") -> tuple[bool, str]:
         return True, Result.text
 
 def GetLatestVersionCode() -> str | None:
-    Success, Result = GetRawFile("internal/VERSION.txt")
+    Success, Result = GetRawFile("internal/data/VERSION.txt")
 
     if Success:
         return Result.replace("\n", "")
     else:
+        print(f"Failed to get latest version: {Result}")
         return None
 
 if __name__ == "__main__":
