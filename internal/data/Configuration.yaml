@@ -1,0 +1,8 @@
+ProgramName: PIP Module Installer
+ThisVersion: "3.0"
+
+# Update via GitHub support, set to false to skip.
+# GitHub: false
+GitHub:
+   Author: Greenloop36
+   Repository: pip-module-installer-v3
