@@ -24,6 +24,7 @@ import json
 import yaml
 import ctypes
 import ast
+import subprocess
 
 from tkinter import filedialog
 
@@ -416,6 +417,63 @@ class Commands:
             out.info("Verbose output enabled")
         else:
             out.info("Verbose output disabled")
+    
+    def verify(*_):
+        os.system("pip check")
+    
+    def get(*args):
+        """
+        Get information about a specific package.
+
+        Arguments:
+            - Package: str
+        """
+
+        ## Variables
+        SUCCESS, ARGS = EvaluateArgs(args[0], "Package:str")
+        if not SUCCESS: return out.exception(ARGS)
+
+        Package: str = ARGS[0]
+
+        RESULT = subprocess.run(
+            ["pip", "show", Package],
+            capture_output=True,
+            text=True
+        )
+
+        if RESULT.returncode == 0:
+            return RESULT.stdout
+        else:
+            if RESULT.stderr.find("not found"):
+                return out.error(f"The package specified does not exist.")
+            else:
+                return out.error(f"Unknown error (Code {RESULT.returncode})")
+    
+    def pip(*args):
+        """
+        Run commands through PIP.
+
+        Arguments:
+            - Arguments: str
+        """
+
+        ## Variables
+        SUCCESS, ARGS = EvaluateArgs(args[0], "Arguments:str")
+        if not SUCCESS: return out.exception(ARGS)
+
+        Arguments: str = ARGS[0]
+
+        RESULT = subprocess.run(
+            ["pip", *Arguments.split(" ")],
+            capture_output=True,
+            text=True
+        )
+
+        if RESULT.returncode == 0:
+            return RESULT.stdout
+        else:
+            out.error(f"Command failed with code {RESULT.returncode}:")
+            out.exception(RESULT.stderr)
 
 ## Runtime
 

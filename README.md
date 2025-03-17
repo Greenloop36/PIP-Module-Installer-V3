@@ -1,4 +1,5 @@
-# CLI Boilerplate
+# PIP Module Installer (Version 3)
+The third iteration of PIP Module Installer, now more robust and efficient than ever!
 developed by @gl36
 
 ## Installation
@@ -11,7 +12,31 @@ developed by @gl36
 6. The software has successfully been installed. See below for more information on its usage.
 
 ## Usage
-*Usage*
+
+### Installing Packages
+* Use the `install` command to install a package.
+ * You can specify multiple packages by separating them with a space
+
+**Example Usage**
+* `install colorama`
+* `install colorama requests` (installs both of the packages)
+
+### Removing Packages
+* Use the `rm` command to uninstall a package. Does not include dependencies.
+ * You can specify multiple packages by separating them with a space
+ * **warning**: This command does not ask for confirmation!
+
+**Example Usage**
+* `rm colorama`
+* `rm colorama requests` (removes both of the packages)
+
+### Installing Packages to a Directory
+* Use the `at` command to install a singular package to a given directory
+* A directory selection dialog will appear after you run the command.
+
+**Example Usage**
+* `at colorama`
+
 
 ## Dependencies
 Built for Windows 10/11. Not suitable for any other operating system.
