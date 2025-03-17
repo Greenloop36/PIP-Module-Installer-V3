@@ -19,7 +19,7 @@ def StatusOut(Action: Literal["message", "OK", "FAIL"] = "message", Message: str
         else:
             print(f"{Prefix}[{Fore.LIGHTRED_EX}FAIL{Fore.RESET}]")
 
-def InstallationAction(Packages: list[str], args: list[str], Message: str):
+def InstallationAction(Packages: list[str], args: list[str], Message: str, SuffixArgs: list[str] = []):
     AMOUNT: int = len(Packages)
     ERRORS: ErrorList = {}
     ERROR_COUNT: int = 0
@@ -31,10 +31,15 @@ def InstallationAction(Packages: list[str], args: list[str], Message: str):
 
     ## Installation
     for Name in Packages:
-        StatusOut(Message=f"{Message}ing {Fore.LIGHTCYAN_EX}{Name}{Fore.RESET}...")
+        COMMAND = ["pip", "--no-python-version-warning", *args, Name, *SuffixArgs]
+        out.debug(str(COMMAND), f"InstallationAction: {Message.lower()}")
+        StatusOut(Message=f"{Message.lower()}ing {Fore.LIGHTCYAN_EX}{Name}{Fore.RESET}...")
+
         RESULT: subprocess.CompletedProcess = subprocess.run(
-            ["pip", "--no-python-version-warning", *args, Name], 
-            capture_output=True)
+            COMMAND, 
+            capture_output=True,
+            shell=True
+            )
 
         if RESULT.returncode == 0:
             StatusOut("OK")
@@ -53,13 +58,14 @@ def InstallationAction(Packages: list[str], args: list[str], Message: str):
     ERROR_COUNT = len(ERRORS)
     if ERROR_COUNT > 0:
         if ERROR_COUNT == 1:
-            out.warn(f"{Message}ation of 1 package failed!")
+            out.warn(f"{Message.lower()}ation of 1 package failed!")
         else:
-            out.warn(f"{Message}ation of {ERROR_COUNT} packages failed!")
+            out.warn(f"{Message.lower()}ation of {ERROR_COUNT} packages failed!")
     
         for Index, Result in ERRORS.items():
             print(f"\t| Failed to {Message} \"{Fore.LIGHTCYAN_EX}{str(Result['Package'])}{Fore.RESET}\":")
-            # print(str(Result["Result"].stderr).encode("utf-8"))
+            out.debug(Result["Result"].stderr.decode("utf-8"), f"InstallationAction: error")
+            out.debug(Result["Result"].returncode, f"InstallationAction: error")
             
             # if Index != ERROR_COUNT: print()
     else:
@@ -73,6 +79,9 @@ def install(Packages: list[str]):
 
 def remove(Packages: list[str]):
     InstallationAction(Packages, ["uninstall", "--yes"], "Uninstall")
+
+def install_to(Package: str, Path: str):
+    InstallationAction([Package], ["install"], "Install", [f"-t", Path])
 
 
 ## Runtime

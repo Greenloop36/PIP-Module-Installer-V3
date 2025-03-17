@@ -25,6 +25,8 @@ import yaml
 import ctypes
 import ast
 
+from tkinter import filedialog
+
 from internal.libraries.utils import UserInput
 import internal.runtime.update as update
 import internal.libraries.output as out
@@ -353,6 +355,32 @@ class Commands:
         ## Install
         installer.install(PackageList.split(" "))
     
+    def at(*args):
+        """
+        Install the package specified to a given directory.
+
+        Arguments:
+            - Package: str
+        """
+
+        ## Variables
+        SUCCESS, ARGS = EvaluateArgs(args[0], "Package:str")
+        if not SUCCESS: return out.exception(ARGS)
+
+        Package: str = ARGS[0]
+
+        try:
+            PATH = filedialog.askdirectory(initialdir=DIR, title="Select where to install the package")
+        except KeyboardInterrupt:
+            return
+        else:
+            out.debug(f"{PATH = }")
+            if PATH == "":
+                return out.error("No directory was given!")
+
+        ## Install
+        installer.install_to(Package, PATH.replace("\\", "/"))
+    
     def rm(*args):
         """
         Removes the packages provided.
@@ -369,6 +397,25 @@ class Commands:
 
         ## Install
         installer.remove(PackageList.split(" "))
+    
+    def verbose(*args):
+        """
+        Enable verbose output. Toggled if no argument is given.
+
+        Arguments:
+            - Enable?: boolean
+        """
+
+        ## Variables
+        SUCCESS, ARGS = EvaluateArgs(args[0], "Enable?:bool")
+        if not SUCCESS: ARGS = [None]
+
+        Flag: str = ARGS[0] or None
+
+        if out.set_debug_flag(Flag) == True:
+            out.info("Verbose output enabled")
+        else:
+            out.info("Verbose output disabled")
 
 ## Runtime
 

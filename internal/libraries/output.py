@@ -3,6 +3,7 @@
 from colorama import Fore, Back, Style, init
 import traceback as tb
 
+__DEBUG_ENABLE = False
 __DEMOTEXT = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam posuere."
 
 __all__ = ["error", "success", "notice", "warn", "exception", "traceback", "info", "init", "critical"]
@@ -14,6 +15,10 @@ def _CreatePrefix(Prefix: str = None):
     else:
         Prefix = " "
     return Prefix
+
+def debug(Message: str, Prefix: str = None):
+    if not __DEBUG_ENABLE: return False
+    print(f"{Style.BRIGHT}{Fore.CYAN}debug{Style.RESET_ALL}:{_CreatePrefix(Prefix)}{Message}")
 
 def info(Message: str, Prefix: str = None):
     print(f"{Style.BRIGHT}{Fore.BLUE}info{Style.RESET_ALL}:{_CreatePrefix(Prefix)}{Message}")
@@ -45,14 +50,24 @@ def traceback(e):
     print(f"\n{Style.BRIGHT}{Fore.WHITE}{Back.RED} {Name} {Back.RESET}{Fore.RED}: {str(e)}{Style.RESET_ALL}")
     print(f"\n{Style.BRIGHT}{Fore.LIGHTCYAN_EX}Stack begin{Style.NORMAL}{Fore.LIGHTBLUE_EX}\n{tb.format_exc()}{Fore.LIGHTCYAN_EX}{Style.BRIGHT}Stack end{Style.RESET_ALL}\n")
 
+def set_debug_flag(Flag: bool = None):
+    global __DEBUG_ENABLE
+    if Flag == None: Flag = not __DEBUG_ENABLE
+
+    __DEBUG_ENABLE = Flag
+    
+    return __DEBUG_ENABLE
+
 ## Demo
 def __demonstration():
+    info(__DEMOTEXT)
     error(__DEMOTEXT)
     success(__DEMOTEXT)
     notice(__DEMOTEXT)
     warn(__DEMOTEXT)
     exception(__DEMOTEXT)
     critical(__DEMOTEXT)
+    debug(__DEMOTEXT)
 
     notice(__DEMOTEXT, "meow")
 
